@@ -1,0 +1,63 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+## Distribution
+
+```{r}
+library(sqldf)
+library(Lahman)
+library(ggplot2)
+query1 <- "select yearID, salary from Salaries"
+
+salary_df <- sqldf(query1)
+
+plot1 <- ggplot()+
+  geom_histogram(data=salary_df, aes(x=salary),color='black',fill='white', bins=10)
+
+plot1
+
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Time Series of Salaries over the Years
+
+```{r}
+query2 <- "select yearID, avg(salary) as avg_salary from Salaries group by yearID"
+salary2<- sqldf(query2)
+
+plot3 <- ggplot()+
+  geom_line(data=salary2, aes(x=yearID, y=avg_salary),color='blue')+
+  geom_point(data=salary2, aes(x=yearID, y=avg_salary),color='red')+
+  ggtitle("Salaries Throughout the Years")+
+  xlab("Year")+
+  ylab("Salaries")
+plot3
+```
+
+### Scatter plot
+
+```{r}
+query3<-"select HR, salary 
+from Batting inner join Salaries
+where HR >10"
+query3 <- sqldf(query3)
+
+plot4<- ggplot(data=query3, aes(x=salary, y=HR))+ geom_point()
+
+plot4
+```
+
